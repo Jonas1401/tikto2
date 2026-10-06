@@ -36,7 +36,10 @@ export function useGameStream(handlers: HandlerMap) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [connected, setConnected] = useState(false);
   const handlersRef = useRef<HandlerMap>(handlers);
-  handlersRef.current = handlers;
+
+  useEffect(() => {
+    handlersRef.current = handlers;
+  }, [handlers]);
 
   useEffect(() => {
     const es = new EventSource("/api/events");

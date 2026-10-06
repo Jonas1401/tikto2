@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Local environment files (keep secrets out of Git)
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs and editor/OS files
+*.log
+.DS_Store
+.vscode/
+.idea/

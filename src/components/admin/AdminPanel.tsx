@@ -19,7 +19,7 @@ export default function AdminPanel() {
   const [botTeam, setBotTeam] = useState<"red" | "blue">("red");
   const [botName, setBotName] = useState("");
   const [spikerText, setSpikerText] = useState("");
-  const [ttUser, setTtUser] = useState("");
+  const [ttUser, setTtUser] = useState<string | null>(null);
   const [ttRoom, setTtRoom] = useState("");
   const [giftName, setGiftName] = useState("");
   const [giftDiamonds, setGiftDiamonds] = useState(10);
@@ -35,12 +35,13 @@ export default function AdminPanel() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("towerAdminToken");
-    if (saved) setToken(saved);
+    if (!saved) return;
+    // Defer until after hydration so the server and first client render match.
+    const frame = window.requestAnimationFrame(() => setToken(saved));
+    return () => window.cancelAnimationFrame(frame);
   }, []);
-  useEffect(() => {
-    if (snapshot?.tiktok.username && !ttUser) setTtUser(snapshot.tiktok.username);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshot?.tiktok.username]);
+
+  const ttUsername = ttUser ?? snapshot?.tiktok.username ?? "";
 
   const pushLog = useCallback((text: string, ok: boolean) => {
     setLog((l) => [{ id: idRef.current++, at: new Date().toLocaleTimeString(), text, ok }, ...l].slice(0, 40));
@@ -116,13 +117,13 @@ export default function AdminPanel() {
           <div className="grid sm:grid-cols-[1fr_1fr_auto_auto] gap-2 items-end">
             <div>
               <label className="label">Username (without @)</label>
-              <input className="input" value={ttUser} onChange={(e) => setTtUser(e.target.value)} placeholder="your_live_account" />
+              <input className="input" value={ttUsername} onChange={(e) => setTtUser(e.target.value)} placeholder="your_live_account" />
             </div>
             <div>
               <label className="label">Room ID (optional)</label>
               <input className="input" value={ttRoom} onChange={(e) => setTtRoom(e.target.value)} placeholder="7xxxxxxxxxxxxxxxxxx" />
             </div>
-            <button className="btn btn-primary" disabled={busy !== null} onClick={() => api({ action: "tiktokConnect", username: ttUser, roomId: ttRoom })}>
+            <button className="btn btn-primary" disabled={busy !== null} onClick={() => api({ action: "tiktokConnect", username: ttUsername, roomId: ttRoom })}>
               Connect
             </button>
             <button className="btn btn-danger" disabled={busy !== null} onClick={() => api({ action: "tiktokDisconnect" })}>
