@@ -1,4 +1,4 @@
-import { db } from "@/db";
+import { db, requireDatabase } from "@/db";
 import { giftEvents, leaderboardEntries, matches } from "@/db/schema";
 import { and, desc, eq, sql } from "drizzle-orm";
 import type { LeaderboardTop, Team } from "./types";
@@ -14,6 +14,7 @@ export async function recordDamage(
   dmg: number,
 ): Promise<void> {
   if (!uid || dmg <= 0) return;
+  requireDatabase();
   await db
     .insert(leaderboardEntries)
     .values({
@@ -35,6 +36,7 @@ export async function recordDamage(
 }
 
 export async function topLeaderboard(n: number): Promise<LeaderboardTop[]> {
+  requireDatabase();
   const rows = await db
     .select({
       uid: leaderboardEntries.uid,
@@ -50,6 +52,7 @@ export async function topLeaderboard(n: number): Promise<LeaderboardTop[]> {
 }
 
 export async function topLeaderboardForDay(day: string, n: number): Promise<LeaderboardTop[]> {
+  requireDatabase();
   return db
     .select({
       uid: leaderboardEntries.uid,
@@ -79,6 +82,7 @@ export interface MatchRecordInput {
 }
 
 export async function recordMatch(m: MatchRecordInput): Promise<void> {
+  requireDatabase();
   await db.insert(matches).values({
     startedAt: new Date(m.startedAt),
     endedAt: new Date(),
@@ -112,6 +116,7 @@ export interface GiftLogInput {
 }
 
 export async function recordGift(g: GiftLogInput): Promise<void> {
+  requireDatabase();
   await db.insert(giftEvents).values({
     uid: g.uid,
     nickname: g.nickname || "Player",
@@ -127,14 +132,17 @@ export async function recordGift(g: GiftLogInput): Promise<void> {
 }
 
 export async function recentMatches(n: number) {
+  requireDatabase();
   return db.select().from(matches).orderBy(desc(matches.endedAt)).limit(n);
 }
 
 export async function recentGifts(n: number) {
+  requireDatabase();
   return db.select().from(giftEvents).orderBy(desc(giftEvents.createdAt)).limit(n);
 }
 
 export async function overallStats() {
+  requireDatabase();
   const [m] = await db
     .select({
       total: sql<number>`count(*)::int`,

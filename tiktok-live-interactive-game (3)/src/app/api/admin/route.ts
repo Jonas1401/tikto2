@@ -51,8 +51,9 @@ export async function POST(req: Request) {
     switch (action) {
       // ---------- Database bootstrap (run once on a fresh database, e.g. Vercel) ----------
       case "dbSetup": {
-        const { db } = await import("@/db");
+        const { db, requireDatabase } = await import("@/db");
         const { sql } = await import("drizzle-orm");
+        requireDatabase();
         await db.execute(sql.raw(`
 CREATE TABLE IF NOT EXISTS leaderboard_entries (
   id SERIAL PRIMARY KEY,

@@ -73,14 +73,16 @@ npm run dev
 
 ## Deploy to Vercel
 
-1. Push this project to GitHub and **Import** it in Vercel (Framework preset: Next.js, default build settings).
+1. Push this project to GitHub and **Import** it in Vercel. Use the **Next.js** framework preset and set **Root Directory** to `tiktok-live-interactive-game (3)`, where `package.json` is located.
 2. Add a database: **Storage → Create → Postgres** (or connect a Neon database). This exposes
-   `POSTGRES_URL` (or `DATABASE_URL`) to the app automatically.
+   `POSTGRES_URL` (or `DATABASE_URL`) to the app automatically. The app can build and run in simulator mode without a database, but history and persistent rankings require one.
 3. Set environment variables in **Settings → Environment Variables**:
    - `ADMIN_TOKEN` — a strong streamer token (the app default is `admindev`).
    - `TIKTOK_USERNAME` — optional (see the note below).
 4. Deploy, then open `https://<your-app>.vercel.app/admin` and click **🗄 Create DB tables** once.
 5. Open `/` for the overlay, `/admin` for the streamer panel, `/history` for stats.
+
+If the Root Directory is different, update it under **Settings → Build and Deployment** and redeploy.
 
 Notes / limitations on Vercel:
 

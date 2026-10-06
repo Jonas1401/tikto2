@@ -39,7 +39,7 @@ export default function GameStage({ compact = false }: { compact?: boolean }) {
   const idRef = useRef(1);
 
   // ---------- Gift queue ----------
-  const drainGifts = useCallback(() => {
+  const drainGifts = useCallback(function processNextGift() {
     if (giftBusy.current) return;
     const next = giftQueue.current.shift();
     if (!next) return;
@@ -50,7 +50,7 @@ export default function GameStage({ compact = false }: { compact?: boolean }) {
     setTimeout(() => {
       setGift(null);
       giftBusy.current = false;
-      drainGifts();
+      processNextGift();
     }, GIFT_CARD_MS);
   }, []);
 
